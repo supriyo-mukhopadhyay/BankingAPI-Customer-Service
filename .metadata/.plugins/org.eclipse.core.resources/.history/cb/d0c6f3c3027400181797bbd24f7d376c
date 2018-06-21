@@ -1,0 +1,64 @@
+package com.rest.api;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import com.exception.InvalidUserException;
+import com.mysql.cj.protocol.Resultset;
+import com.service.layer.BankingService;
+import com.user.account.details.UserBankDetails;
+import java.sql.ResultSet;
+
+@Path("/userService")
+public class RestAPI {
+	
+	private BankingService service = new BankingService();
+	private String message = "";
+	private ResultSet resultSet = null;
+	static
+	{
+		System.out.println("Hello from rest controller");
+	}
+		
+	@GET
+	@Path("/details")
+	public void testMethod()
+	{
+		System.out.println("Hello from test method");
+	}
+	
+	@GET
+	@Path("/details/{id}/{ifsc}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public UserBankDetails getDetails(@PathParam("id") int empId,
+			@PathParam("ifsc") int ifsc) throws Exception
+	{
+		return service.getUserBankDetails(empId, ifsc);
+	}
+	
+	
+	@POST
+	@Path("/details/{ifsc}{balance},{name}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public String registration(@PathParam("ifsc") int ifsc,
+			@PathParam("balance") int bal,@PathParam("name") String name) throws Exception
+	{
+		//String name = service.getUserName(uid);
+		if(name == null)
+		{
+			resultSet = service.userRegistration(ifsc, bal, name);
+			return null;
+		}
+	
+		else
+		{
+			throw new InvalidUserException("User already registered");
+		}
+		
+		
+	}
+
+}

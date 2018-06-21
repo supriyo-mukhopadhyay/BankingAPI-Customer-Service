@@ -1,0 +1,63 @@
+package com.service.layer;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.dao.layer.BankingDAOLayer;
+import com.exception.InvalidAuthException;
+import com.exception.InvalidUserException;
+import com.user.account.details.UserBankDetails;
+
+public class BankingService {
+
+	private BankingDAOLayer dao = new BankingDAOLayer();
+	
+	public void auth(String uid, String pwd) throws InvalidUserException,
+	InvalidAuthException, SQLException, ClassNotFoundException {
+
+		String password=dao.getPassword(uid);
+		
+		if(password==null)
+			throw new InvalidUserException("wrng uid");
+		
+		if(!password.equals(pwd))
+			throw new InvalidAuthException("wrng pwd");
+		}
+	
+	
+	public UserBankDetails getUserBankDetails(int empid, int ifsc) throws Exception
+	{
+	
+		UserBankDetails dtUser = new UserBankDetails();		
+		dtUser.setName(dao.getName(empid));
+		dtUser.setAccountNumber(dao.getAccount(empid));
+		dtUser.setBalance(dao.getBalance(empid));
+		dtUser.setBankName(dao.getBankName(ifsc));
+		return dtUser;
+	}
+	
+	public String bankDetails(int ifsc) throws SQLException, ClassNotFoundException
+	{
+		return dao.getBankName(ifsc);
+	}
+	
+	public ResultSet userBankRegistration(int ifsc, int balance, int uid) throws SQLException, ClassNotFoundException
+	{
+		String userName = dao.getUserName(uid);
+		String bankName = dao.getBankName(ifsc);
+		ResultSet result =  dao.registerUser(bankName, balance,uid,userName);
+		return result;
+	}
+	
+	public String getUserName(int empid) throws SQLException, ClassNotFoundException
+	{
+		return dao.getUserName(empid);
+	}
+	
+	public void updateAccountDetails(int empid, int balance) throws SQLException, ClassNotFoundException
+	{
+		dao.updateDetails(empid, balance);
+	}
+}

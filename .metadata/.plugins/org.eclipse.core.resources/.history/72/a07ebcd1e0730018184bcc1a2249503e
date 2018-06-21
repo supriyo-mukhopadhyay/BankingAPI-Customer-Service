@@ -1,0 +1,69 @@
+package com.service.layer;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.dao.layer.BankingDAOLayer;
+import com.exception.InvalidAuthException;
+import com.exception.InvalidUserException;
+
+@Service
+public class ServiceLayer {
+
+	BankingDAOLayer dao;
+
+	@Autowired
+	public void setDao(BankingDAOLayer dao) {
+		this.dao = dao;
+	}
+	
+	public void auth(String uid, String pwd) throws InvalidUserException,
+	InvalidAuthException {
+
+		String password=dao.getPassword(uid);
+		
+		if(password==null)
+			throw new InvalidUserException("wrng uid");
+		
+		if(!password.equals(pwd))
+			throw new InvalidAuthException("wrng pwd");
+		}
+	
+	public List<Object> setUserBankDetails(int empid, int ifsc) throws Exception
+	{
+		List<Object> list = new ArrayList<Object>();
+		
+		String name = dao.getName(empid);
+		int accountNo = dao.getAccount(empid);
+		int balance = dao.getBalance(empid);
+		list.add(name);
+		list.add(accountNo);
+		list.add(balance);
+		
+		
+		return list;
+	}
+	public String bankDetails(int ifsc)
+	{
+		return dao.getBankName(ifsc);
+	}
+	public void userRegistration(int ifsc, int balance, int uid)
+	{
+		String userName = dao.getUserName(uid);
+		String bankName = dao.getBankName(ifsc);
+		dao.registerUser(bankName, balance,uid,userName);
+	}
+	
+	public String getUserName(int empid)
+	{
+		return dao.getUserName(empid);
+	}
+	
+	public void updateAccountDetails(int empid, int balance)
+	{
+		dao.updateDetails(empid, balance);
+	}
+}
